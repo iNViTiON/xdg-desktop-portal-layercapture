@@ -116,8 +116,13 @@ modules = [
 
 ### After switching
 
-1. **Log out and back in.** Restarting xdg-desktop-portal is not enough, because the session
-   bus (dbus-broker) does not pick up new D-Bus service files on `nixos-rebuild switch`.
+1. **Restart xdg-desktop-portal** (or log out and back in). It picks its backends only at
+   startup, so the one that was running before the switch keeps routing InputCapture
+   elsewhere:
+   `systemctl --user restart xdg-desktop-portal.service`
+   If `SupportedCapabilities` still reads 0 afterwards, the session bus has not picked up the
+   new D-Bus service file yet (`busctl --user list --activatable | grep layercapture` is
+   empty): log out and back in.
 2. Restart KDE Connect, e.g.
    `systemctl --user restart app-org.kde.kdeconnect.daemon@autostart.service`, or reconnect the
    phone.

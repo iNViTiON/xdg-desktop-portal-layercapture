@@ -317,6 +317,36 @@ fn parse_error_disconnects() {
     assert!(notes.iter().any(|n| matches!(n, Note::Disconnected { .. })), "{notes:?}");
 }
 
+/// KDE Connect's libei context has no name, and libei sends `ei_handshake.name` with a NULL
+/// string. That must not kill the connection (it did on the first live test).
+#[test]
+fn null_handshake_name_is_tolerated() {
+    let (server_end, client_end) = socketpair().unwrap();
+    let mut server = EisConn::new(server_end).unwrap();
+    let mut raw = UnixStream::from(client_end);
+    raw.set_nonblocking(false).unwrap();
+    let msg = |opcode: u32, args: &[u32]| {
+        let mut m = Vec::new();
+        m.extend_from_slice(&0u64.to_ne_bytes()); // ei_handshake is object 0
+        m.extend_from_slice(&(16 + 4 * args.len() as u32).to_ne_bytes());
+        m.extend_from_slice(&opcode.to_ne_bytes());
+        for a in args {
+            m.extend_from_slice(&a.to_ne_bytes());
+        }
+        m
+    };
+    raw.write_all(&msg(0, &[1])).unwrap(); // handshake_version 1
+    raw.write_all(&msg(3, &[0])).unwrap(); // name: NULL string (length 0)
+    raw.write_all(&msg(2, &[1])).unwrap(); // context_type receiver
+    let deadline = Instant::now() + Duration::from_millis(300);
+    while Instant::now() < deadline {
+        let notes = server.read();
+        assert!(!notes.iter().any(|n| matches!(n, Note::Disconnected { .. })), "{notes:?}");
+        std::thread::sleep(Duration::from_millis(10));
+    }
+    assert!(!server.is_dead());
+}
+
 #[test]
 fn eof_is_reported() {
     let (server_end, client_end) = socketpair().unwrap();

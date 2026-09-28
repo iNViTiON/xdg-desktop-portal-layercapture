@@ -234,6 +234,12 @@ impl EisConn {
             }
             match pending {
                 PendingRequestResult::Request(req) => self.handle_request(req, &mut notes),
+                PendingRequestResult::ParseError(reis::ParseError::InvalidNull) => {
+                    // libei sends `ei_handshake.name` with a NULL string when the client never
+                    // set a name, and KDE Connect never does. reis rejects the NULL, but the
+                    // message is already consumed, so skipping it keeps the stream in sync.
+                    tracing::debug!("EIS: skipped a message with a NULL string (unnamed libei client)");
+                }
                 PendingRequestResult::ParseError(e) => {
                     // The buffer is not drained after a header error; continuing would spin.
                     self.disconnect(eis::connection::DisconnectReason::Protocol, Some("parse error"));
