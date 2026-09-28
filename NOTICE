@@ -1,0 +1,10 @@
+xdg-desktop-portal-layercapture is MIT-licensed (see LICENSE).
+
+Design references (ideas only unless a file header says otherwise):
+- Qingswe/niri-input-portal (MIT) — layer-shell + pointer-lock InputCapture design for niri.
+- emersion/xdg-desktop-portal-wlr PR #359 (MIT) — EIS keymap/modifier forwarding.
+- ids1024/reis (MIT) — EIS server examples.
+- gfhdhytghd/hypr-kdeconnect-fix (MIT) — impl-portal caller checks and data files.
+GPL-licensed projects consulted for behaviour only, no code copied: feschber/lan-mouse
+(GPL-3.0), KWin. xdg-desktop-portal, xdg-desktop-portal-gnome/-kde and KDE Connect sources were
+read as references for the protocol contract.

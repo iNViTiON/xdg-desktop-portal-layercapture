@@ -1,0 +1,32 @@
+[package]
+name = "xdg-desktop-portal-layercapture"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+description = "xdg-desktop-portal InputCapture backend for niri, using a layer-shell barrier and an EIS server"
+publish = false
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+rustix = { version = "1", features = ["fs", "net", "event", "time", "process", "thread"] }
+reis = "=0.7.1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "sync", "signal", "time"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tracing-appender = "0.2"
+futures-util = { version = "0.3", default-features = false, features = ["std"] }
+wayland-client = "0.31"
+zbus = { version = "5", default-features = false, features = ["tokio"] }
+wayland-protocols = { version = "0.32", features = ["client", "unstable", "staging"] }
+wayland-protocols-wlr = { version = "0.3", features = ["client"] }
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[dev-dependencies]
+ashpd = { version = "0.13", default-features = false, features = ["tokio", "input_capture"] }
