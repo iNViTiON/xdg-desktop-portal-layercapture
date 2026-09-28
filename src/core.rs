@@ -810,7 +810,8 @@ impl Core {
                         tracing::info!("Release for stale activation {req} (current {cur}) ignored")
                     }
                     (Some(_), _) => self.end_capture(End::ClientRelease, cursor, "client Release"),
-                    (None, _) => tracing::debug!("Release while not active in session {session}: ignored"),
+                    // Usually a late Release (the phone's message arrived after the capture ended).
+                    (None, _) => tracing::info!("Release while no capture is active in session {session}: ignored"),
                 }
             }
             Cmd::ConnectEis { session, server } => {

@@ -350,6 +350,12 @@ restart kdeconnectd afterwards.
 - **kdeconnectd logs `Couldn't create input capture session`:** same cause, InputCapture is
   not routed to this backend. Fix routing, then restart kdeconnectd. The kdeconnectd log is
   usually under `journalctl --user -u app-org.kde.kdeconnect.daemon@autostart.service`.
+- **Control doesn't come back from the phone** (only Mod+Escape ends the capture):
+  the phone's release message is late. kdeconnectd's log (`journalctl --user -u
+  app-org.kde.kdeconnect.daemon@autostart.service`) shows `releasing with ...` only seconds
+  later, typically while the phone is linked over Bluetooth instead of Wi-Fi (e.g. right after
+  restarting kdeconnectd). Wait for the Wi-Fi link, or toggle KDE Connect on the phone. The
+  backend logs late releases as `Release while no capture is active`.
 - **Crossing did nothing:**
   - Push harder; it takes about 24 px of motion past the edge.
   - Check the edge chosen in the plugin settings.
